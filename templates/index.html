@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ques Home</title>
+    <link rel="stylesheet" href="{% static './css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="{% url 'home' %}"><img src="{% static './src/assets/header/logo.svg' %}" alt="logo"></a>
+                <img src="{% static './src/assets/header/search.svg' %}" alt="search">
+            </div>
+        </div>
+    </header>
+    <section class="hero">
+        <div class="container">
+            <div class="hero__content">
+                <h2>Товары для уюта и тепла!</h2>
+                <p>
+                    Ques Home — уютный бутик с вещами, которые находят тебя сами. Аксессуары, текстиль, декор и
+                    маленькие
+                    находки для дома и души.
+                </p>
+            </div>
+        </div>
+    </section>
+<!--    <section class="filters">-->
+<!--        <div class="container">-->
+<!--            <div class="filters__content">-->
+<!--                <h3>Лучшее для вас!</h3>-->
+<!--                <ul>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                    <li>Все</li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--    </section>-->
+    <div class="product">
+        <div class="container">
+            <div class="product__content">
+                {% for i in products %}
+                <a href="{% url 'product_detail' i.id %}" class="product__cart">
+                    {% if i.pic.0 %}
+                    <img src="{{ i.pic.0 }}" alt="#" style="    max-height: none;">
+                    {% else %}
+                    <img src="{% static 'src/template_01.png' %}" alt="#">
+                    {% endif %}
+                    <div class="product__info">
+                        <h5>{{ i.type }}</h5>
+                        <h4>{{ i.name }}</h4>
+                        <p>{{ i.cost }} сом</p>
+                    </div>
+                </a>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <section class="pagination">
+
+        {# Назад #}
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}"><button class="nav" id="prev">&lt;</button></a>
+        {% else %}
+            <button class="nav" id="prev" disabled>&lt;</button>
+        {% endif %}
+
+        {# Первая страница и многоточие #}
+        {% if custom_page_range.0 > 1 %}
+            <a href="?page=1"><button class="page">1</button></a>
+            {% if custom_page_range.0 > 2 %}
+                <span>...</span>
+            {% endif %}
+        {% endif %}
+
+        {# Основной диапазон #}
+        {% for num in custom_page_range %}
+            {% if num == page_obj.number %}
+                <a href="?page={{ num }}"><button class="page active">{{ num }}</button></a>
+            {% else %}
+                <a href="?page={{ num }}"><button class="page">{{ num }}</button></a>
+            {% endif %}
+        {% endfor %}
+
+        {# Последняя страница и многоточие #}
+        {% if custom_page_range|last < paginator.num_pages %}
+            {% if custom_page_range|last < paginator.num_pages|add:"-1" %}
+                <span>...</span>
+            {% endif %}
+            <a href="?page={{ paginator.num_pages }}"><button class="page">{{ paginator.num_pages }}</button></a>
+        {% endif %}
+
+        {# Вперёд #}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"><button class="nav" id="next">&gt;</button></a>
+        {% else %}
+            <button class="nav" id="next" disabled>&gt;</button>
+        {% endif %}
+
+    </section>
+    {% endif %}
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__top">
+                <div class="footer__logo">
+                    <img src="{% static './src/assets/header/logo.svg' %}" alt="#">
+                </div>
+                <nav class="footer__nav">
+                    <a href="#">Главная</a>
+                    <a href="#">Каталог</a>
+                    <a href="#">О нас</a>
+                    <a href="#">Контакты</a>
+                </nav>
+                <div class="footer__contacts">
+                    <p>г. Бишкек, ул. Теплая, 24</p>
+                    <p>+996 700 000 000</p>
+                    <p>queshome@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>© 2025 Ques Home. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script src="{% static './sript.js' %}"></script>
+</body>
+
+</html>
+
+</div>

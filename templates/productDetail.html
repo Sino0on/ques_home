@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ques Home {{ product.name }}</title>
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="icon" href="{% static 'src/assets/header/logo.svg' %}" type="image/x-icon" />
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'src/assets/header/logo.svg' %}" />
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <a href="{% url 'home' %}"><img src="{% static 'src/assets/header/logo.svg' %}" alt="logo"></a>
+                <img src="{% static 'src/assets/header/search.svg' %}" alt="search">
+            </div>
+        </div>
+    </header>
+    <section class="productDetail">
+        <div class="container">
+            <a href="{% url 'home' %}"><button class="productDetail__back">&lt; Назад</button></a>
+            <div class="productDetail__content">
+                <div class="productDetail__gallery" style="justify-content: center; display: flex;">
+                    {% if product.pic.0 %}
+                    <img class="main-image" src="{{ product.pic.0 }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img class="main-image" src="{% static 'src/template_01.png' %}" alt="{{ product.name }}">
+                    {% endif %}
+
+
+                </div>
+
+                <div class="productDetail__info">
+                    <h1>{{ product.name }}</h1>
+                    <div class="price">{{ product.cost }} сом</div>
+
+
+                    <h4>Описание</h4>
+                    <p>
+                        {{ product.description }}
+                    </p>
+
+                    <a href="#" class="whatsapp-btn">
+                        <img src="{% static 'src/assets/image.png' %}" alt="WhatsApp">
+                        Оформить покупку через Whatsapp
+                    </a>
+                </div>
+            </div>
+
+            <h3>Так же другие товары</h3>
+
+            <div class="productDetail__others">
+                {% for i in products %}
+                <a href="{% url 'product_detail' i.id %}" class="product__cart">
+                    {% if i.pic.0 %}
+                    <img src="{{ i.pic.0 }}" alt="#" style="">
+                    {% else %}
+                    <img src="{% static 'src/template_01.png' %}" alt="#">
+                    {% endif %}
+                    <div class="product__info">
+                        <h5>{{ i.type }}</h5>
+                        <h4>{{ i.name }}</h4>
+                        <p>{{ i.cost }} сом</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+<footer class="footer">
+        <div class="container">
+            <div class="footer__top">
+                <div class="footer__logo">
+                    <img src="{% static './src/assets/header/logo.svg' %}" alt="#">
+                </div>
+                <nav class="footer__nav">
+                    <a href="#">Главная</a>
+                    <a href="#">Каталог</a>
+                    <a href="#">О нас</a>
+                    <a href="#">Контакты</a>
+                </nav>
+                <div class="footer__contacts">
+                    <p>г. Бишкек, ул. Теплая, 24</p>
+                    <p>+996 700 000 000</p>
+                    <p>queshome@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p>© 2025 Ques Home. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script src="{% static './sript.js' %}"></script>
+</body>
+
+</html>
+
+</div>

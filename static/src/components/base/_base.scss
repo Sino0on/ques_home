@@ -1,0 +1,35 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+body{
+    margin: 0;
+    font-family: "IgraSans", sans-serif;
+}
+
+.container{
+    max-width: 1232px;
+    margin: 0 auto;
+}
+li{
+    list-style: none;
+    cursor: pointer;
+    padding: 6px;
+    transition: 0.5s;
+    border-radius: 16px;
+}
+li:hover{
+    background: #49484826;
+}
+a{
+    text-decoration: none;
+    color: #000;
+}
+@media (max-width:768px) {
+    .container{
+        max-width: 400px;
+    }
+}

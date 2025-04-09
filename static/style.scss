@@ -1,0 +1,15 @@
+@font-face {
+    font-family: "IgraSans";
+    src: url("./src/assets/fonts/IgraSans.otf") format("opentype");
+    font-weight: normal; 
+    font-style: normal; 
+}
+@import "./src/components/header/header";
+@import "./src/components/base/base";
+@import "./src/components/hero/hero";
+@import "./src/components/filters/filters";
+@import "./src/components/product/product";
+@import "./src/components/pagination/pagination";
+@import "./src/components/productDetail/productDetail";
+@import "./src/components/footer/footer";
+

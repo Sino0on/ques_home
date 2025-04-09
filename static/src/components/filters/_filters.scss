@@ -1,0 +1,35 @@
+.filters {
+    position: sticky;
+    top: 80px; // отступ от верхней границы (если у тебя уже есть фиксированный header)
+    z-index: 999;
+    background-color: white; // обязательно! иначе фон может быть прозрачным
+    border-bottom: 1px solid #00000080;
+    padding-top: 24px;
+    &__content{
+        padding-top: 24px;
+    }
+    h3 {
+        text-align: center;
+        font-weight: 400;
+        font-size: 42px;
+    }
+
+    ul {
+        display: flex;
+        justify-content: center;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 1rem;
+        scroll-behavior: smooth;
+        gap: 48px;
+    }
+
+    ul::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    ul::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+}
