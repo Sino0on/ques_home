@@ -13,3 +13,15 @@
         }
     }
 }
+&__left{
+         display: flex;
+         align-items: center;
+         gap: 10px;
+         p{
+             font-family: 'playfair display';
+             font-size: 18px;
+             font-weight: 600;
+             color: #fff;
+             width: 50%;
+         }
+     }

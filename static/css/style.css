@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 @font-face {
   font-family: "IgraSans";
   src: url("./src/assets/fonts/IgraSans.otf") format("opentype");
@@ -18,6 +19,19 @@
 .header__content img {
   cursor: pointer;
 }
+
+.header__left {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+ }
+ .header__left p {
+   font-family: "playfair display";
+   font-size: 18px;
+   font-weight: 600;
+   color: #fff;
+   width: 50%;
+ }
 
 h1,
 h2,
@@ -369,6 +383,14 @@ a {
   gap: 32px;
   margin-bottom: 24px;
 }
+@media (max-width: 768px) {
+   .footer__top {
+     flex-direction: column;
+     align-items: center;
+     text-align: center;
+     gap: 24px;
+   }
+ }
 .footer__logo {
   font-size: 20px;
   font-weight: bold;
@@ -379,24 +401,81 @@ a {
   gap: 8px;
 }
 .footer__nav a {
-  color: #333;
-  text-decoration: none;
+
   color: #fff;
+  text-decoration: none;
 }
 .footer__nav a:hover {
   text-decoration: underline;
 }
+@media (max-width: 768px) {
+   .footer__nav {
+     flex-direction: row;
+     flex-wrap: wrap;
+     justify-content: center;
+     gap: 16px;
+   }
+ }
 .footer__contacts {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.footer__socials {
-  display: flex;
-  gap: 12px;
-}
+
+@media (max-width: 768px) {
+   .footer__contacts {
+     align-items: center;
+   }
 .footer__bottom {
   text-align: center;
   font-size: 12px;
   color: #fff;
+  margin-top: 16px;
 }/*# sourceMappingURL=style.css.map */
+
+@media (max-width: 480px) {
+   .footer__bottom {
+     font-size: 11px;
+   }
+ }
+
+ @keyframes shimmer {
+   0% {
+     background-position: -200% 0;
+   }
+   100% {
+     background-position: 200% 0;
+   }
+ }
+ .skeleton-box {
+   background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+   background-size: 200% 100%;
+   animation: shimmer 1s infinite;
+   border-radius: 8px;
+ }
+
+ .product__cart.skeleton {
+   display: flex;
+   gap: 12px;
+   padding: 12px;
+   background: white;
+   border: 1px solid #eee;
+   border-radius: 8px;
+ }
+
+ .skeleton-img {
+   width: 80px;
+   height: 80px;
+   margin: 0 auto;
+ }
+
+ .skeleton-text {
+   width: 100%;
+   height: 16px;
+   margin-bottom: 8px;
+ }
+
+ .skeleton-price {
+   width: 40%;
+   height: 14px;
+ }/*# sourceMappingURL=style.css.map */

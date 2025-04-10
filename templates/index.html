@@ -15,15 +15,18 @@
     <header class="header">
         <div class="container">
             <div class="header__content">
-                <a href="{% url 'home' %}"><img src="{% static './src/assets/header/logo.svg' %}" alt="logo"></a>
+                <div class="header__left">
+                     <img src="{% static './src/assets/header/logo.svg' %}" alt="logo">
+                     <p style="color: #F9F7DF;">Создаем уют, вдохновляем на стиль</p>
+                 </div>
                 <img src="{% static './src/assets/header/search.svg' %}" alt="search">
             </div>
         </div>
     </header>
-    <section class="hero">
+    <section class="hero" style="background: url({% static 'src/bg.webp' %})  center no-repeat; object-fit: cover;">
         <div class="container">
             <div class="hero__content">
-                <h2>Товары для уюта и тепла!</h2>
+                <h2>Товары для уюта и тепла</h2>
                 <p>
                     Ques Home — товары, которые превратят дом в уютное и стильное пространство
                 </p>
@@ -134,7 +137,7 @@
 
 
 
-    <script src="{% static './sript.js' %}"></script>
+    <script src="{% static './script.js' %}"></script>
 </body>
 
 </html>
