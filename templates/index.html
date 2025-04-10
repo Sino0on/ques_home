@@ -32,50 +32,17 @@
             </div>
         </div>
     </section>
-<!--    <section class="filters">-->
-<!--        <div class="container">-->
-<!--            <div class="filters__content">-->
-<!--                <h3>Лучшее для вас!</h3>-->
-<!--                <ul>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                    <li>Все</li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--    </section>-->
+    <section class="filters">
+        <div class="container">
+            <div class="filters__content">
+                <h3>Лучшее для вас!</h3>
+                <ul>
+                    {% for i in categories %}
+                    <a href="{% url 'home' %}?id_group={{ i.id }}"><li>{{ i.name }}</li></a>
+                    {% endfor %}
+                </ul>
+            </div>
+    </section>
     <div class="product">
         <div class="container">
             <div class="product__content">

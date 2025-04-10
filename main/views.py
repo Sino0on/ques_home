@@ -18,6 +18,16 @@ def products_list(request):
         update_data(request, test=True)
     with open('db.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
+    with open('categories.json', 'r', encoding='utf-8') as f:
+        categories = json.load(f)
+
+
+    if request.GET.get('id_group', None):
+        category = [i for i in categories if i['id_group'] == request.GET.get('id_group', None)]
+        data = [i for i in data if i['id_group'] == request.GET.get('id_group', None)]
+    else:
+        category = [i for i in categories if i['id_group'] == 0]
+
     # Пагинация
     page = request.GET.get('page', 1)  # Получаем номер страницы, по умолчанию 1
     paginator = Paginator(data, 12)  # Показываем по 10 элементов на страницу
@@ -53,6 +63,7 @@ def products_list(request):
         "page_obj": products,
         "is_paginated": products.has_other_pages(),
         "custom_page_range": custom_page_range,
+        'categories': category
     }
     pprint(products.object_list)
     return render(request, 'index.html', context)
@@ -86,6 +97,7 @@ def update_data(request, test=None):
         # print("Ответ получен успешно!")
         data = response.json()
         dastan = []
+        categories = []
         print(len(data['data']))
         for i in range(len(data['data'])):
             if data["data"][i]['type'] != 'group':
@@ -95,8 +107,16 @@ def update_data(request, test=None):
                     for k, v in data["data"][i].items()
                 }
                 dastan.append(a)
+            else:
+                a = {
+                    (k[1:] if k.startswith('_') else k): v
+                    for k, v in data["data"][i].items()
+                }
+                categories.append(a)
         with open('db.json', 'w', encoding='utf-8') as f:
             json.dump(dastan[::-1], f, ensure_ascii=False, indent=4)
+        with open('categories.json', 'w', encoding='utf-8') as f:
+            json.dump(categories[::-1], f, ensure_ascii=False, indent=4)
         if not test:
             return HttpResponse("ok")
     else:
