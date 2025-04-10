@@ -36,7 +36,7 @@
 
                 <div class="productDetail__info">
                     <h1>{{ product.name }}</h1>
-                    <div class="price">{{ product.cost }} сом</div>
+                    <div class="price">{{ product.price }} сом</div>
 
 
                     <h4>Описание</h4>
@@ -44,7 +44,7 @@
                         {{ product.description }}
                     </p>
 
-                    <a href="#" class="whatsapp-btn">
+                    <a href="https://api.whatsapp.com/send?phone=+996507003033&text=Здравствуйте, пишу вам из сайта home.ques.kg. Товар - {{ product_name }}\nКод - {{ product.id }}" class="whatsapp-btn">
                         <img src="{% static 'src/assets/image.png' %}" alt="WhatsApp">
                         Оформить покупку через Whatsapp
                     </a>
@@ -64,7 +64,7 @@
                     <div class="product__info">
                         <h5>{{ i.type }}</h5>
                         <h4>{{ i.name }}</h4>
-                        <p>{{ i.cost }} сом</p>
+                        <p>{{ i.price }} сом</p>
                     </div>
                 </a>
                 {% endfor %}
