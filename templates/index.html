@@ -37,7 +37,7 @@
         <div class="container">
             <div class="filters__content">
                 <h3>Лучшее для вас!</h3>
-                <ul>
+                <ul style="justify-content: flex-start;">
                     {% for i in categories %}
                     <a href="{% url 'home' %}?id_group={{ i.id }}"><li>{{ i.name }}</li></a>
                     {% endfor %}
