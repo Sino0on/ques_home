@@ -15,15 +15,17 @@
     <header class="header">
         <div class="container">
             <div class="header__content">
+                <a href="/">
                 <div class="header__left">
                      <img src="{% static './src/assets/header/logo.svg' %}" alt="logo">
                      <p style="color: #F9F7DF;">Создаем уют, вдохновляем на стиль</p>
                  </div>
+                    </a>
                 <img src="{% static './src/assets/header/search.svg' %}" alt="search">
             </div>
         </div>
     </header>
-    <section class="hero" style="background: url({% static 'src/bg.jpg' %})  center no-repeat; object-fit: cover;">
+    <section class="hero" style="background: url({% static 'src/bg.png' %})  center no-repeat; background-size: cover;">
         <div class="container">
             <div class="hero__content">
                 <h2>Товары для уюта и тепла</h2>
@@ -67,49 +69,57 @@
     </div>
 
     {% if is_paginated %}
-    <section class="pagination">
+        <section class="pagination">
 
-        {# Назад #}
-        {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}"><button class="nav" id="prev">&lt;</button></a>
-        {% else %}
-            <button class="nav" id="prev" disabled>&lt;</button>
-        {% endif %}
-
-        {# Первая страница и многоточие #}
-        {% if custom_page_range.0 > 1 %}
-            <a href="?page=1"><button class="page">1</button></a>
-            {% if custom_page_range.0 > 2 %}
-                <span>...</span>
-            {% endif %}
-        {% endif %}
-
-        {# Основной диапазон #}
-        {% for num in custom_page_range %}
-            {% if num == page_obj.number %}
-                <a href="?page={{ num }}"><button class="page active">{{ num }}</button></a>
+            {# Назад #}
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">
+                    <button class="nav" id="prev">&lt;</button>
+                </a>
             {% else %}
-                <a href="?page={{ num }}"><button class="page">{{ num }}</button></a>
+                <button class="nav" id="prev" disabled>&lt;</button>
             {% endif %}
-        {% endfor %}
 
-        {# Последняя страница и многоточие #}
-        {% if custom_page_range|last < paginator.num_pages %}
-            {% if custom_page_range|last < paginator.num_pages|add:"-1" %}
-                <span>...</span>
+            {# Первая страница и многоточие #}
+            {% if custom_page_range.0 > 1 %}
+                <a href="?id_group={{params}}&page=1"><button class="page">1</button></a>
+                {% if custom_page_range.0 > 2 %}
+                    <span>...</span>
+                {% endif %}
             {% endif %}
-            <a href="?page={{ paginator.num_pages }}"><button class="page">{{ paginator.num_pages }}</button></a>
-        {% endif %}
 
-        {# Вперёд #}
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}"><button class="nav" id="next">&gt;</button></a>
-        {% else %}
-            <button class="nav" id="next" disabled>&gt;</button>
-        {% endif %}
+            {# Основной диапазон #}
+            {% for num in custom_page_range %}
+                {% if num == page_obj.number %}
+                    <a href="?id_group={{ params }}&page={{ num }}"><button class="page active">{{ num }}</button></a>
+                {% else %}
+                    <a href="?id_group={{ params }}&page={{ num }}"><button class="page">{{ num }}</button></a>
+                {% endif %}
+            {% endfor %}
 
-    </section>
+            {# Последняя страница и многоточие #}
+            {% if custom_page_range|last < paginator.num_pages %}
+                {% if custom_page_range|last < paginator.num_pages|add:"-1" %}
+                    <span>...</span>
+                {% endif %}
+                <a href="?id_group={{ params }}&page={{ paginator.num_pages }}"><button class="page">{{ paginator.num_pages }}</button></a>
+            {% endif %}
+
+            {# Вперёд #}
+            {% if page_obj.has_next %}
+                <a href="?id_group={{ params }}&page={{ page_obj.next_page_number }}">
+                    <button class="nav" id="next">&gt;</button>
+                </a>
+            {% else %}
+                <button class="nav" id="next" disabled>&gt;</button>
+            {% endif %}
+
+        </section>
     {% endif %}
+
+
+
+
 
     <footer class="footer">
         <div class="container">

@@ -25,6 +25,7 @@ def products_list(request):
     if request.GET.get('id_group', None):
         category = [i for i in categories if i['id_group'] == request.GET.get('id_group', None)]
         data = [i for i in data if i['id_group'] == request.GET.get('id_group', None)]
+
     else:
         category = [i for i in categories if i['id_group'] == 0]
 
@@ -65,7 +66,10 @@ def products_list(request):
         "custom_page_range": custom_page_range,
         'categories': category
     }
-    pprint(products.object_list)
+    if request.GET.get('id_group', None):
+        context['params'] = request.GET.get('id_group', None)
+        print(context['params'])
+    # pprint(products.object_list)
     return render(request, 'index.html', context)
 
 
@@ -98,7 +102,7 @@ def update_data(request, test=None):
         data = response.json()
         dastan = []
         categories = []
-        print(len(data['data']))
+        # print(len(data['data']))
         for i in range(len(data['data'])):
             if data["data"][i]['type'] != 'group':
 
