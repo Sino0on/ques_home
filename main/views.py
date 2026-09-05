@@ -107,8 +107,13 @@ def update_data(request, test=None):
         "connect.sid": config("CONNECT_ID"),
         "company_id": config("COMPANY_ID"),
     }
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "cloudshop-timezone": "21600",
+        "Referer": "https://app.pos-service.kg/",
+    }
 
-    response = requests.get(url, cookies=cookies)
+    response = requests.get(url, cookies=cookies, headers=headers)
 
     if response.status_code == 200:
         # print("Ответ получен успешно!")
@@ -137,6 +142,8 @@ def update_data(request, test=None):
         if not test:
             return HttpResponse("ok")
     else:
+        print(response.status_code)
+
         if not test:
             return HttpResponse("error")
 
