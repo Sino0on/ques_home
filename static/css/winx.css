@@ -1,0 +1,1416 @@
+:root {
+  --bg: #fbf8ff;
+  --bg-panel: rgba(255, 255, 255, 0.68);
+  --bg-panel-strong: rgba(255, 255, 255, 0.9);
+  --line: rgba(83, 66, 150, 0.16);
+  --ink: #2b2350;
+  --muted: #6a5f92;
+  --accent: #ff5fa8;
+  --accent-2: #4f6fee;
+  --accent-cool: #2fc0e8;
+  --green: #2ecb8a;
+  --shadow: rgba(90, 70, 160, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.winx-eyebrow {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+.winx-lede {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.grad-text {
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 45%, var(--accent-cool) 75%, var(--accent) 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+  animation: winx-shimmer 4s linear infinite;
+}
+
+@keyframes winx-shimmer {
+  to {
+    background-position: -250% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grad-text {
+    animation: none;
+  }
+}
+
+.winx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 34px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 10px 26px -10px rgba(255, 95, 168, 0.55);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.winx-btn:hover {
+  background: #fff;
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px -8px rgba(255, 95, 168, 0.5);
+}
+
+.winx-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Reveal on scroll */
+.reveal-el {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-el.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Particles — daylight magic dust, sparkles and fireflies */
+.winx-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.winx-particle {
+  position: absolute;
+  pointer-events: none;
+  animation: winx-twinkle ease-in-out infinite;
+}
+
+.winx-particle.dot {
+  border-radius: 50%;
+}
+
+.winx-particle.spark {
+  animation-name: winx-twinkle, winx-spin;
+  animation-timing-function: ease-in-out, linear;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+}
+
+.winx-particle.firefly {
+  border-radius: 50%;
+  filter: blur(0.5px);
+  animation-name: winx-twinkle, winx-firefly-drift;
+  animation-timing-function: ease-in-out, ease-in-out;
+}
+
+.winx-particle.pink {
+  background: var(--accent);
+  box-shadow: 0 0 8px 2px rgba(255, 95, 168, 0.55);
+}
+
+.winx-particle.blue {
+  background: var(--accent-2);
+  box-shadow: 0 0 8px 2px rgba(79, 111, 238, 0.5);
+}
+
+.winx-particle.cool {
+  background: var(--accent-cool);
+  box-shadow: 0 0 8px 2px rgba(47, 192, 232, 0.5);
+}
+
+.winx-particle.green {
+  background: var(--green);
+  box-shadow: 0 0 8px 2px rgba(46, 203, 138, 0.5);
+}
+
+@keyframes winx-twinkle {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes winx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes winx-firefly-drift {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(12px, -34px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-particle {
+    animation: none;
+    opacity: 0.35;
+  }
+}
+
+/* Celebration burst — spawned on win moments */
+.winx-burst {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 300;
+  box-shadow: 0 0 12px 3px currentColor;
+  transform: translate(-50%, -50%);
+  animation: winx-burst-fly 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes winx-burst-fly {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* Butterflies — decorative, drifting */
+.winx-butterfly {
+  position: absolute;
+  width: 40px;
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgba(90, 70, 160, 0.22));
+  animation: winx-butterfly-float 7s ease-in-out infinite;
+}
+
+.winx-butterfly .wing {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: winx-wing-flap 0.7s ease-in-out infinite alternate;
+}
+
+.winx-butterfly--sm {
+  width: 26px;
+}
+
+.winx-butterfly--lg {
+  width: 52px;
+}
+
+.winx-butterfly--d1 {
+  animation-duration: 6.5s;
+  animation-delay: -1.2s;
+}
+
+.winx-butterfly--d1 .wing {
+  animation-delay: -0.15s;
+}
+
+.winx-butterfly--d2 {
+  animation-duration: 8s;
+  animation-delay: -3.4s;
+}
+
+.winx-butterfly--d2 .wing {
+  animation-delay: -0.4s;
+}
+
+.winx-butterfly--d3 {
+  animation-duration: 7.2s;
+  animation-delay: -5s;
+}
+
+.winx-butterfly--d3 .wing {
+  animation-delay: -0.25s;
+}
+
+@keyframes winx-wing-flap {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0.7);
+  }
+}
+
+@keyframes winx-butterfly-float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(-4deg);
+  }
+  50% {
+    transform: translate(16px, -26px) rotate(4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-butterfly,
+  .winx-butterfly .wing {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .winx-butterfly {
+    width: 30px;
+  }
+
+  .winx-butterfly--lg {
+    width: 38px;
+  }
+}
+
+/* Sound toggle */
+.winx-sound-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 60;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -10px var(--shadow);
+}
+
+/* Dot navigation */
+.winx-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.winx-dots button {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.winx-dots button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.6);
+}
+
+@media (max-width: 768px) {
+  .winx-dots {
+    display: none;
+  }
+}
+
+/* Slide base — one shared soft-light canvas, no seams between sections */
+.winx-slide {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 24px;
+  overflow: hidden;
+  text-align: center;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.winx-slide:first-child {
+  border-top: none;
+}
+
+.winx-slide::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: blur(40px);
+  background:
+    radial-gradient(ellipse 55% 45% at 18% 22%, var(--glow-a, transparent), transparent 62%),
+    radial-gradient(ellipse 55% 45% at 82% 78%, var(--glow-b, transparent), transparent 62%);
+  animation: winx-glow-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes winx-glow-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(3%, -3%) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-slide::before {
+    animation: none;
+  }
+}
+
+.winx-hero {
+  --glow-a: rgba(79, 111, 238, 0.4);
+  --glow-b: rgba(255, 95, 168, 0.35);
+}
+
+.winx-collection {
+  --glow-a: rgba(47, 192, 232, 0.3);
+  --glow-b: rgba(255, 95, 168, 0.26);
+}
+
+.winx-box {
+  --glow-a: rgba(255, 95, 168, 0.28);
+  --glow-b: rgba(79, 111, 238, 0.24);
+}
+
+.winx-materials {
+  --glow-a: rgba(46, 203, 138, 0.28);
+  --glow-b: rgba(47, 192, 232, 0.22);
+}
+
+.winx-puzzle {
+  --glow-a: rgba(47, 192, 232, 0.28);
+  --glow-b: rgba(255, 95, 168, 0.24);
+}
+
+.winx-order {
+  --glow-a: rgba(255, 95, 168, 0.3);
+  --glow-b: rgba(79, 111, 238, 0.24);
+}
+
+.winx-games {
+  --glow-a: rgba(47, 192, 232, 0.26);
+  --glow-b: rgba(46, 203, 138, 0.22);
+}
+
+.winx-quiz {
+  --glow-a: rgba(79, 111, 238, 0.3);
+  --glow-b: rgba(255, 95, 168, 0.24);
+}
+
+.winx-final {
+  --glow-a: rgba(255, 95, 168, 0.26);
+  --glow-b: rgba(46, 203, 138, 0.22);
+}
+
+.winx-slide h2 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: 1.15;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.winx-slide h3 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+}
+
+.winx-slide p {
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Slide 1 — hero */
+.winx-hero {
+  background: linear-gradient(180deg, #dcebff 0%, #eee3ff 42%, #ffe3f1 100%);
+}
+
+.winx-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 12% at 15% 18%, rgba(255, 255, 255, 0.85), transparent 70%),
+    radial-gradient(ellipse 22% 10% at 78% 12%, rgba(255, 255, 255, 0.75), transparent 70%),
+    radial-gradient(ellipse 26% 10% at 85% 30%, rgba(255, 255, 255, 0.6), transparent 70%);
+}
+
+.winx-castle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.winx-vine {
+  position: absolute;
+  z-index: 1;
+  width: 160px;
+  height: 160px;
+  pointer-events: none;
+  animation: winx-vine-sway 7s ease-in-out infinite;
+}
+
+.winx-vine--tl {
+  top: 0;
+  left: 0;
+}
+
+.winx-vine--br {
+  bottom: 0;
+  right: 0;
+  animation-delay: -3s;
+}
+
+@keyframes winx-vine-sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@media (max-width: 700px) {
+  .winx-vine {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-vine {
+    animation: none;
+  }
+}
+
+.winx-hero__flight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.winx-hero__spark {
+  position: absolute;
+  left: 6%;
+  bottom: 8%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 16px 4px rgba(79, 111, 238, 0.7);
+  opacity: 0;
+  animation: winx-spark-flight 2.1s cubic-bezier(0.34, 1.1, 0.4, 1) 0.3s forwards;
+}
+
+.winx-hero__spark--pink {
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  box-shadow: 0 0 14px 4px rgba(255, 95, 168, 0.7);
+  animation-delay: 0.5s;
+  animation-duration: 2s;
+}
+
+@keyframes winx-spark-flight {
+  0% {
+    left: 4%;
+    bottom: 6%;
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    left: 32%;
+    bottom: 58%;
+    transform: scale(1);
+  }
+  78% {
+    left: 55%;
+    bottom: 66%;
+    transform: scale(1.1);
+  }
+  100% {
+    left: 66%;
+    bottom: 60%;
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+.winx-hero__dust {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 8px 2px rgba(79, 111, 238, 0.6);
+  transform: translate(-50%, -50%);
+  animation: winx-dust-fade 0.9s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes winx-dust-fade {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2) translateY(12px);
+  }
+}
+
+.winx-hero__content {
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: winx-hero-text-in 1.2s ease 2.3s forwards;
+}
+
+.winx-hero__content::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.35) 45%, transparent 72%);
+  filter: blur(50px);
+  animation: winx-glow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes winx-glow-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-hero__content::before {
+    animation: none;
+  }
+}
+
+@keyframes winx-hero-text-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.winx-hero__lockup {
+  max-width: 480px;
+  width: 78vw;
+  border-radius: 18px;
+  filter: drop-shadow(0 20px 50px rgba(90, 70, 160, 0.35));
+}
+
+.winx-hero__hint {
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.winx-scrolldown {
+  position: absolute;
+  z-index: 2;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--muted);
+  font-size: 20px;
+  animation: winx-bounce 2s infinite;
+}
+
+@keyframes winx-bounce {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 8px);
+  }
+}
+
+/* Slide 2 — collection */
+.winx-collection {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.winx-collection__content {
+  background: var(--bg-panel);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 36px 44px;
+  box-shadow: 0 20px 50px -20px var(--shadow);
+}
+
+.winx-collection__content p.winx-lede {
+  margin-top: 4px;
+}
+
+/* Slide 3 — secret box */
+.winx-box__intro {
+  max-width: 520px;
+  margin: 0 auto 40px;
+}
+
+.winx-carousel {
+  position: relative;
+  padding: 0 44px;
+}
+
+.winx-carousel__track {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 10px 4px 24px;
+  scrollbar-width: none;
+}
+
+.winx-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+.winx-box__card {
+  scroll-snap-align: center;
+  flex: 0 0 220px;
+  border-radius: 16px;
+  padding: 22px 18px 26px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 30px -18px var(--shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.winx-box__card:hover {
+  transform: translateY(-6px);
+  border-color: var(--card-color, var(--accent));
+  box-shadow: 0 16px 32px -12px var(--card-color, var(--accent));
+}
+
+.winx-box__card-portrait {
+  position: relative;
+  height: 160px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.winx-box__card-portrait::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 32%, var(--card-color, var(--accent)) 0%, transparent 68%);
+  opacity: 0.3;
+  filter: blur(18px);
+  z-index: 0;
+}
+
+.winx-box__card-portrait img {
+  position: relative;
+  z-index: 1;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 16px rgba(90, 70, 160, 0.25));
+}
+
+.winx-box__card-portrait--icon span {
+  position: relative;
+  z-index: 1;
+  font-size: 40px;
+  color: var(--card-color, var(--accent));
+}
+
+.winx-box__card h4 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 19px;
+  margin: 0 0 4px;
+  color: var(--ink);
+}
+
+.winx-box__card span {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.winx-box__card p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.winx-box__card--picked {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 2px var(--accent-2);
+}
+
+.winx-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-panel-strong);
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 5;
+  color: var(--ink);
+  box-shadow: 0 8px 18px -10px var(--shadow);
+}
+
+.winx-carousel__nav.prev {
+  left: 0;
+}
+
+.winx-carousel__nav.next {
+  right: 0;
+}
+
+@media (max-width: 600px) {
+  .winx-carousel__nav {
+    display: none;
+  }
+
+  .winx-carousel {
+    padding: 0;
+  }
+}
+
+.winx-box__spin {
+  margin-top: 34px;
+  text-align: center;
+}
+
+.winx-box__reel {
+  width: 190px;
+  margin: 0 auto 20px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 30px -18px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.winx-box__reel.spinning {
+  animation: winx-reel-pulse 0.3s ease-in-out infinite;
+}
+
+@keyframes winx-reel-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.winx-box__reel-icon {
+  width: 84px;
+  height: 104px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: var(--ink);
+  background-color: rgba(83, 66, 150, 0.06);
+  background-size: cover;
+  background-position: top center;
+  border: 1px solid var(--line);
+}
+
+.winx-box__reel-name {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.winx-box__spin-result {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--ink);
+  min-height: 20px;
+}
+
+/* Slide 4 — materials */
+.winx-materials__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 40px;
+  box-shadow: 0 14px 30px -18px var(--shadow);
+}
+
+.winx-materials__item {
+  background: var(--bg-panel-strong);
+  padding: 46px 36px;
+  text-align: left;
+}
+
+.winx-materials__index {
+  display: block;
+  font-family: "Fraunces", serif;
+  font-size: 14px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-bottom: 18px;
+}
+
+.winx-materials__item h3 {
+  color: var(--ink);
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.winx-materials__item p {
+  font-size: 15px;
+}
+
+@media (max-width: 768px) {
+  .winx-materials__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .winx-materials__item {
+    text-align: center;
+  }
+}
+
+.winx-materials__transform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.winx-materials__arrow {
+  color: var(--accent);
+}
+
+/* Slide 5 — puzzle */
+.winx-slide.winx-puzzle h2 {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.winx-puzzle__subtitle {
+  max-width: 420px;
+  margin: 0 auto 26px;
+}
+
+.winx-puzzle__rules {
+  max-width: 440px;
+  margin: 0 auto 34px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px 26px;
+  text-align: left;
+  box-shadow: 0 14px 30px -18px var(--shadow);
+}
+
+.winx-puzzle__rules-title {
+  font-family: "Fraunces", serif;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+
+.winx-puzzle__rules ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.winx-puzzle__board {
+  display: grid;
+  grid-template-columns: repeat(3, 82px);
+  grid-template-rows: repeat(3, 82px);
+  gap: 2px;
+  margin: 0 auto 20px;
+  width: max-content;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px -18px var(--shadow);
+}
+
+@media (min-width: 480px) {
+  .winx-puzzle__board {
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
+  }
+}
+
+.winx-puzzle__tile {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  filter: brightness(0.9) saturate(0.95);
+  transition: filter 0.2s ease, outline 0.2s ease;
+}
+
+.winx-puzzle__tile.selected {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  filter: brightness(1);
+}
+
+.winx-puzzle__board.solved .winx-puzzle__tile {
+  outline: none;
+  cursor: default;
+  filter: brightness(1);
+}
+
+.winx-puzzle__msg {
+  min-height: 24px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+/* Slide 6 — order */
+.winx-order__wrap {
+  max-width: 420px;
+}
+
+.winx-order__intro {
+  margin-bottom: 26px;
+}
+
+#orderLocked .winx-btn {
+  margin-top: 8px;
+}
+
+.winx-order__form {
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 30px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+  box-shadow: 0 14px 30px -18px var(--shadow);
+}
+
+.winx-order__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.winx-order__form input[type="text"],
+.winx-order__form input[type="tel"] {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(83, 66, 150, 0.05);
+  color: var(--ink);
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.winx-order__method {
+  display: flex;
+  gap: 22px;
+  flex-direction: row !important;
+  text-transform: none;
+}
+
+.winx-order__method label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  text-transform: none;
+  color: var(--ink);
+}
+
+.winx-order__error {
+  color: var(--accent);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Slide 7 — other games */
+.winx-games__disclaimer {
+  margin-bottom: 36px;
+}
+
+.winx-games__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.winx-games__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 220px;
+  padding: 40px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 30px -18px var(--shadow);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.winx-games__card:hover {
+  border-color: var(--accent);
+  background: var(--bg-panel-strong);
+  transform: translateY(-4px);
+}
+
+.winx-games__index {
+  font-family: "Fraunces", serif;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.winx-games__name {
+  font-family: "Fraunces", serif;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.winx-games__badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 95, 168, 0.08);
+}
+
+/* Slide 8 — quiz */
+.winx-quiz__wrap {
+  max-width: 520px;
+}
+
+.winx-quiz__disclaimer {
+  margin-bottom: 26px;
+}
+
+.winx-quiz__progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.winx-quiz__progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.3s ease;
+}
+
+#quizQuestion {
+  font-size: 20px;
+  margin-bottom: 22px;
+  color: var(--ink);
+}
+
+.winx-quiz__options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.winx-quiz__option {
+  text-align: left;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.winx-quiz__option:hover {
+  border-color: var(--accent);
+  background: var(--bg-panel-strong);
+  transform: translateX(2px);
+}
+
+.winx-quiz__result {
+  background: var(--bg-panel);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 40px 34px;
+  box-shadow: 0 14px 30px -18px var(--shadow);
+}
+
+.winx-quiz__result-visual {
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.winx-quiz__result-img {
+  max-height: 220px;
+  max-width: 100%;
+  filter: drop-shadow(0 14px 30px rgba(90, 70, 160, 0.3));
+}
+
+.winx-quiz__result-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid var(--card-color, var(--accent));
+  color: var(--card-color, var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", serif;
+  font-size: 26px;
+}
+
+.winx-quiz__result h3 {
+  color: var(--ink);
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+.winx-quiz__result p {
+  margin-bottom: 24px;
+}
+
+/* Slide 9 — final */
+.winx-final__contacts {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 30px;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ink);
+}
+
+/* QR modal */
+.winx-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 35, 80, 0.4);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.winx-modal[hidden] {
+  display: none;
+}
+
+.winx-modal__box {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 34px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 24px 60px -14px var(--shadow);
+}
+
+.winx-modal__box h3 {
+  color: var(--ink);
+  margin: 0;
+  font-size: 22px;
+}
+
+.winx-modal__box p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.winx-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.winx-modal__qr-placeholder {
+  width: 160px;
+  height: 160px;
+  margin: 22px auto;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(83, 66, 150, 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-el,
+  .winx-hero__content,
+  .winx-scrolldown,
+  .winx-hero__spark {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

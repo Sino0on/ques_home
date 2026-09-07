@@ -1,11 +1,13 @@
 from idlelib.rpc import request_queue
 from random import shuffle
+import random
 from datetime import datetime, timezone, timedelta
 import time
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 import requests
 import json
 from pprint import pprint
@@ -13,7 +15,14 @@ from decouple import config
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
+from .models import WinxOrder
+
 SALES_REPORT_URL = "https://app.pos-service.kg/proxy/?path=%2Freport%2F64abd976dac244c8d30a926c%2Fsales%2Fgroups-products%2F0%2F1000%2F&api=v3&timezone=21600"
+
+TELEGRAM_BOT_TOKEN = config("TELEGRAM_BOT_TOKEN", default="")
+TELEGRAM_CHAT_ID = config("TELEGRAM_CHAT_ID", default="")
+
+WINX_PUZZLE_COUNT = 5
 
 SALES_REPORT_HEADERS = [
     "Наименование", "Штрих-код", "Артикул", "Выручка", "Прибыль",
@@ -305,3 +314,76 @@ def sales_report_export(request):
     response["Content-Disposition"] = f'attachment; filename="sales_report_{start_date}_{end_date}.xlsx"'
     wb.save(response)
     return response
+
+
+def winx_landing(request):
+    if "winx_puzzle_index" not in request.session:
+        request.session["winx_puzzle_index"] = random.randint(0, WINX_PUZZLE_COUNT - 1)
+
+    context = {
+        "puzzle_index": request.session["winx_puzzle_index"],
+        "discount_claimed": request.session.get("winx_discount_claimed", False),
+    }
+    return render(request, "winx.html", context)
+
+
+@require_POST
+def winx_claim_discount(request):
+    already_claimed = request.session.get("winx_discount_claimed", False)
+    request.session["winx_discount_claimed"] = True
+    return JsonResponse({
+        "ok": True,
+        "already_claimed": already_claimed,
+        "discount_percent": 5,
+    })
+
+
+@require_POST
+def winx_submit_order(request):
+    discount_claimed = request.session.get("winx_discount_claimed", False)
+    if not discount_claimed:
+        return JsonResponse({"ok": False, "error": "Сначала собери пазл, чтобы получить скидку"}, status=403)
+
+    full_name = request.POST.get("full_name", "").strip()
+    phone = request.POST.get("phone", "").strip()
+    method = request.POST.get("method", "").strip()
+    address = request.POST.get("address", "").strip()
+
+    if not full_name or not phone or method not in ("delivery", "pickup"):
+        return JsonResponse({"ok": False, "error": "Заполните все обязательные поля"}, status=400)
+    if method == "delivery" and not address:
+        return JsonResponse({"ok": False, "error": "Укажите точный адрес доставки"}, status=400)
+
+    method_label = "Доставка" if method == "delivery" else "Самовывоз"
+
+    WinxOrder.objects.create(
+        full_name=full_name,
+        phone=phone,
+        method=method,
+        address=address if method == "delivery" else "",
+        discount_claimed=discount_claimed,
+    )
+
+    lines = [
+        "✨ Новый заказ QUES x WINX — Secret Box",
+        f"ФИО: {full_name}",
+        f"Телефон: {phone}",
+        f"Получение: {method_label}",
+    ]
+    if method == "delivery":
+        lines.append(f"Адрес: {address}")
+    lines.append(f"Скидка 5% (пазл): {'да' if discount_claimed else 'нет'}")
+
+    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+        try:
+            requests.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                json={"chat_id": TELEGRAM_CHAT_ID, "text": "\n".join(lines)},
+                timeout=10,
+            )
+        except requests.RequestException as e:
+            print("Telegram send failed:", e)
+    else:
+        print("Telegram is not configured, order:", "\n".join(lines))
+
+    return JsonResponse({"ok": True})

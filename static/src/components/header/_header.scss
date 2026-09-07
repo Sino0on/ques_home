@@ -1,5 +1,6 @@
 .header {
-    background: #6D7C56;
+    background: linear-gradient(90deg, $winx-blue-deep 0%, $winx-blue 60%, #4a3aa8 100%);
+    box-shadow: 0 2px 24px rgba(25, 18, 86, 0.35);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -12,16 +13,17 @@
             cursor: pointer;
         }
     }
+
+    &__left{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        p{
+            font-family: 'playfair display';
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            width: 50%;
+        }
+    }
 }
-&__left{
-         display: flex;
-         align-items: center;
-         gap: 10px;
-         p{
-             font-family: 'playfair display';
-             font-size: 18px;
-             font-weight: 600;
-             color: #fff;
-             width: 50%;
-         }
-     }

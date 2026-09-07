@@ -4,10 +4,10 @@
     &__back {
         margin-bottom: 16px;
         font-size: 16px;
-        background: #dcd9d9;
+        background: linear-gradient(90deg, rgba($winx-blue, 0.1), rgba($winx-pink, 0.12));
         border: none;
         cursor: pointer;
-        color: #333;
+        color: $winx-blue-deep;
         padding: 16px 8px;
         border-radius: 8px;
     }
@@ -62,7 +62,8 @@
 
         .price {
             font-size: 20px;
-            color: #e60000;
+            font-weight: 700;
+            color: $winx-pink;
             margin-bottom: 16px;
         }
 

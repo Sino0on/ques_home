@@ -9,9 +9,17 @@
     &__cart {
         display: flex;
         flex-direction: column;
+        border-radius: 16px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba($winx-blue, 0.16);
+        }
 
         img {
-            border: solid #00000033 1px;
+            border: solid rgba($winx-blue, 0.12) 1px;
+            border-radius: 14px;
             width: 100%;
             max-height: 235px;
         }
@@ -30,10 +38,13 @@
         }
 
         p {
-            font-weight: 400;
+            font-weight: 600;
             font-size: 14px;
-            color: #19191980;
-
+            background: linear-gradient(90deg, $winx-pink, $winx-blue);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
         }
     }
     &__info{

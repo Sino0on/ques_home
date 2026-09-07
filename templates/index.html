@@ -15,7 +15,7 @@
     <header class="header">
         <div class="container">
             <div class="header__content">
-                <a href="/">
+                <a href="{% url 'home' %}">
                 <div class="header__left">
                      <img src="{% static './src/assets/header/logo.svg' %}" alt="logo">
                      <p style="color: #F9F7DF;">Создаем уют, вдохновляем на стиль</p>
@@ -25,7 +25,7 @@
             </div>
         </div>
     </header>
-    <section class="hero" style="background: url({% static 'src/bg.png' %})  center no-repeat; background-size: cover;">
+    <section class="hero">
         <div class="container">
             <div class="hero__content">
                 <h2>Товары для уюта и тепла</h2>
@@ -128,8 +128,8 @@
                     <img src="{% static './src/assets/header/logo.svg' %}" alt="#">
                 </div>
                 <nav class="footer__nav">
-                    <a href="#">Главная</a>
-                    <a href="#">Каталог</a>
+                    <a href="{% url 'winx_landing' %}">Главная</a>
+                    <a href="{% url 'home' %}">Каталог</a>
                     <a href="#">О нас</a>
                     <a href="#">Контакты</a>
                 </nav>
