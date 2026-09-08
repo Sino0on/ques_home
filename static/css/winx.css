@@ -32,7 +32,7 @@ html.winx-pager-active {
 
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
+  font-family: "Jost", sans-serif;
   background: var(--bg);
   color: var(--ink);
   overflow-x: hidden;
@@ -47,9 +47,9 @@ body {
 }
 
 .winx-eyebrow {
-  font-family: "Inter", sans-serif;
+  font-family: "Jost", sans-serif;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted);
@@ -96,7 +96,7 @@ body {
   cursor: pointer;
   background: var(--accent);
   color: var(--ink);
-  font-family: "Inter", sans-serif;
+  font-family: "Jost", sans-serif;
   font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -376,7 +376,7 @@ body {
   backdrop-filter: blur(6px);
   color: var(--ink);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
@@ -546,7 +546,7 @@ body {
 }
 
 .winx-slide h2 {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 500;
   font-size: clamp(32px, 4.4vw, 52px);
   line-height: 1.15;
@@ -556,7 +556,7 @@ body {
 }
 
 .winx-slide h3 {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 500;
 }
 
@@ -913,7 +913,7 @@ body {
 }
 
 .winx-box__card h4 {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 500;
   font-size: 19px;
   margin: 0 0 4px;
@@ -1021,7 +1021,7 @@ body {
 }
 
 .winx-box__reel-name {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 500;
   color: var(--ink);
   font-size: 16px;
@@ -1038,7 +1038,7 @@ body {
   display: inline-block;
   margin-top: 18px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.03em;
   color: var(--muted);
   text-decoration: none;
@@ -1065,7 +1065,7 @@ body {
 
 .winx-materials__index {
   display: block;
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 14px;
   color: var(--accent);
   letter-spacing: 0.1em;
@@ -1133,7 +1133,7 @@ body {
 }
 
 .winx-puzzle__rules-title {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1246,7 +1246,7 @@ body {
   flex-direction: column;
   gap: 6px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1267,7 +1267,7 @@ body {
 .winx-order__total {
   margin: -4px 0 0;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: normal;
   text-transform: none;
   color: var(--ink);
@@ -1360,14 +1360,14 @@ body {
 }
 
 .winx-games__index {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 13px;
   color: var(--accent);
   letter-spacing: 0.1em;
 }
 
 .winx-games__name {
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 18px;
   color: var(--ink);
 }
@@ -1385,7 +1385,7 @@ body {
   border: 1px solid var(--accent);
   color: var(--accent);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 4px 8px;
@@ -1506,7 +1506,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Fraunces", serif;
+  font-family: "Cormorant Garamond", serif;
   font-size: 26px;
 }
 
@@ -1616,12 +1616,53 @@ body {
 .winx-final__contacts {
   list-style: none;
   padding: 0;
-  margin: 12px 0 30px;
-  font-size: 16px;
+  margin: 18px auto 34px;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
   color: var(--ink);
+}
+
+.winx-final__contacts li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 2px;
+  font-size: 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.winx-final__contacts li:last-child {
+  border-bottom: none;
+}
+
+.winx-final__contacts a {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.winx-final__contacts a:hover {
+  color: var(--accent);
+}
+
+.winx-final__contact-icon {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  color: var(--accent);
+}
+
+.winx-final__contact-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .winx-final__actions {

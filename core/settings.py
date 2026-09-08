@@ -29,6 +29,23 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Needed for POST requests (order/checkout forms, admin login) to pass
+# Django's CSRF Origin check when served over HTTPS behind a reverse
+# proxy — without this, Django compares the browser's "Origin: https://..."
+# header against an "http://" origin it derives itself and rejects the
+# request ("Origin checking failed"). Comma-separated in .env, e.g.
+# CSRF_TRUSTED_ORIGINS=https://ques.kg,https://www.ques.kg
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in config("CSRF_TRUSTED_ORIGINS", default="").split(",")
+    if o.strip()
+]
+
+# nginx (in front of this app) terminates TLS and sets X-Forwarded-Proto —
+# this tells Django the original request was HTTPS so it generates correct
+# URLs/redirects and the CSRF Origin check above compares like for like.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 
 # Application definition
 
