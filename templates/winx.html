@@ -242,18 +242,21 @@
             </div>
         </section>
 
-        <section id="slide-6" class="winx-slide winx-order reveal">
+        <section id="slide-6" class="winx-slide winx-order reveal"
+                 style="background-image: linear-gradient(180deg, var(--bg) 0%, rgba(251,248,255,.35) 18%, rgba(251,248,255,.2) 80%, var(--bg) 100%), url('{% static "src/assets/winx/girls-city.jpg" %}');">
             <div class="container winx-order__wrap">
-                <div id="orderLocked" {% if discount_claimed %}hidden{% endif %} class="reveal-el">
+                <div id="orderLocked" {% if discount_claimed %}hidden{% endif %} class="reveal-el winx-order__intro-panel">
                     <p class="winx-eyebrow">05 — Заказ</p>
                     <h2>Сначала немного магии</h2>
                     <p class="winx-order__intro">Чтобы оформить заказ со скидкой, сначала собери пазл на предыдущем экране.</p>
                     <button class="winx-btn" id="goToPuzzleBtn" type="button">Собрать пазл →</button>
                 </div>
                 <div id="orderFormWrap" {% if not discount_claimed %}hidden{% endif %}>
-                    <p class="winx-eyebrow reveal-el">05 — Заказ</p>
-                    <h2 class="reveal-el">Скидка твоя</h2>
-                    <p class="winx-order__intro reveal-el">Оставь свои данные, чтобы мы сохранили твою скидку и помогли оформить заказ.</p>
+                    <div class="winx-order__intro-panel reveal-el">
+                        <p class="winx-eyebrow">05 — Заказ</p>
+                        <h2>Скидка твоя</h2>
+                        <p class="winx-order__intro">Оставь свои данные, чтобы мы сохранили твою скидку и помогли оформить заказ.</p>
+                    </div>
                     <form id="orderForm" class="winx-order__form reveal-el">
                         {% csrf_token %}
                         <label>ФИО
@@ -280,20 +283,25 @@
             </div>
         </section>
 
-        <section id="slide-7" class="winx-slide winx-games reveal">
+        <section id="slide-7" class="winx-slide winx-games reveal"
+                 style="background-image: linear-gradient(180deg, var(--bg) 0%, rgba(251,248,255,.35) 18%, rgba(251,248,255,.2) 80%, var(--bg) 100%), url('{% static "src/assets/winx/roadtrip.jpg" %}');">
             <div class="container">
-                <p class="winx-eyebrow reveal-el">06 — Ещё магии</p>
-                <h2 class="reveal-el">Сыграть в другие игры с Winx</h2>
-                <p class="winx-games__disclaimer reveal-el">В этих играх скидка не действует — только веселье.</p>
+                <div class="winx-games__intro-panel reveal-el">
+                    <p class="winx-eyebrow">06 — Ещё магии</p>
+                    <h2>Сыграть в другие игры с Winx</h2>
+                    <p class="winx-games__disclaimer">В этих играх скидка не действует — только веселье.</p>
+                </div>
                 <div class="winx-games__row">
                     <button type="button" class="winx-games__card reveal-el" style="--i:0;" data-target="slide-5">
                         <span class="winx-games__index">01</span>
                         <span class="winx-games__name">Пазл</span>
+                        <span class="winx-games__hint">Собери пазл за пару минут и получи скидку 5%</span>
                         <span class="winx-games__badge">5% скидка</span>
                     </button>
                     <button type="button" class="winx-games__card reveal-el" style="--i:1;" data-target="slide-8">
                         <span class="winx-games__index">02</span>
                         <span class="winx-games__name">Кто ты из Winx?</span>
+                        <span class="winx-games__hint">Пройди тест за 1 минуту и узнай свою фею</span>
                     </button>
                 </div>
             </div>
