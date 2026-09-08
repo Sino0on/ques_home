@@ -19,6 +19,162 @@
 
   var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /**
+   * Pager — smooth, eased navigation between full-height slides.
+   * Falls back to native scrollIntoView on touch devices and reduced-motion,
+   * and yields to native scrolling whenever a slide's content is taller
+   * than the viewport so nothing becomes unreachable.
+   */
+  var Pager = (function () {
+    var slides = [];
+    var active = false;
+    var animating = false;
+    var wheelAccum = 0;
+    var wheelResetTimer = null;
+    var THRESHOLD = 46;
+    var DURATION = 820;
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function currentIndex() {
+      var mid = window.scrollY + window.innerHeight / 2;
+      var idx = 0;
+      slides.forEach(function (s, i) {
+        if (s.offsetTop <= mid) idx = i;
+      });
+      return idx;
+    }
+
+    function fitsViewport(slide) {
+      // offsetHeight (actual laid-out box height), not scrollHeight — the
+      // decorative ::before glow layer uses inset:-15% and is clipped by
+      // overflow:hidden, which inflates scrollHeight without the slide
+      // actually needing internal scrolling.
+      return slide.offsetHeight <= window.innerHeight + 2;
+    }
+
+    function animateScrollTo(targetY, onDone) {
+      var startY = window.scrollY;
+      var change = targetY - startY;
+      if (Math.abs(change) < 1) {
+        onDone();
+        return;
+      }
+      var startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var t = Math.min((ts - startTime) / DURATION, 1);
+        // behavior:"instant" is required (not "auto") — "auto" defers to the
+        // page's CSS scroll-behavior:smooth, which would animate *each* rAF
+        // step on top of our own easing and make the scroll lag behind.
+        window.scrollTo({ top: startY + change * easeInOutCubic(t), left: 0, behavior: "instant" });
+        if (t < 1) {
+          requestAnimationFrame(step);
+        } else {
+          onDone();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function flourish(slide) {
+      slide.classList.add("winx-slide--enter");
+      setTimeout(function () {
+        slide.classList.remove("winx-slide--enter");
+      }, 750);
+    }
+
+    function goToIndex(idx) {
+      if (!slides.length) return;
+      idx = Math.max(0, Math.min(slides.length - 1, idx));
+      var target = slides[idx];
+      if (animating) return;
+      animating = true;
+      flourish(target);
+      animateScrollTo(target.offsetTop, function () {
+        animating = false;
+      });
+    }
+
+    function scrollToId(id) {
+      var target = document.getElementById(id);
+      if (!target) return;
+      if (prefersReducedMotion) {
+        target.scrollIntoView({ behavior: "auto" });
+        return;
+      }
+      if (active && !animating) {
+        flourish(target);
+        animating = true;
+        animateScrollTo(target.offsetTop, function () {
+          animating = false;
+        });
+      } else {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    function onWheel(e) {
+      if (document.getElementById("qrModal") && !document.getElementById("qrModal").hidden) return;
+      if (animating) {
+        e.preventDefault();
+        return;
+      }
+      var idx = currentIndex();
+      var slide = slides[idx];
+
+      if (!fitsViewport(slide)) {
+        var atTop = window.scrollY <= slide.offsetTop + 2;
+        var atBottom = window.scrollY + window.innerHeight >= slide.offsetTop + slide.offsetHeight - 2;
+        if (e.deltaY > 0 && !atBottom) return;
+        if (e.deltaY < 0 && !atTop) return;
+      }
+
+      e.preventDefault();
+      wheelAccum += e.deltaY;
+      clearTimeout(wheelResetTimer);
+      wheelResetTimer = setTimeout(function () {
+        wheelAccum = 0;
+      }, 220);
+
+      if (Math.abs(wheelAccum) > THRESHOLD) {
+        var dir = wheelAccum > 0 ? 1 : -1;
+        wheelAccum = 0;
+        goToIndex(idx + dir);
+      }
+    }
+
+    function onKeydown(e) {
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (animating) return;
+      if (e.key === "ArrowDown" || e.key === "PageDown") {
+        e.preventDefault();
+        goToIndex(currentIndex() + 1);
+      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+        e.preventDefault();
+        goToIndex(currentIndex() - 1);
+      }
+    }
+
+    function init() {
+      slides = Array.prototype.slice.call(document.querySelectorAll(".winx-slide"));
+      if (!slides.length || prefersReducedMotion) return;
+
+      var isCoarsePointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+      if (isCoarsePointer) return;
+
+      active = true;
+      document.documentElement.classList.add("winx-pager-active");
+      window.addEventListener("wheel", onWheel, { passive: false });
+      document.addEventListener("keydown", onKeydown);
+    }
+
+    return { init: init, scrollToId: scrollToId };
+  })();
+
   function celebrationBurst(originEl) {
     if (prefersReducedMotion || !originEl) return;
     var rect = originEl.getBoundingClientRect();
@@ -114,8 +270,7 @@
 
     dots.forEach(function (dot) {
       dot.addEventListener("click", function () {
-        var target = document.getElementById(dot.dataset.target);
-        if (target) target.scrollIntoView({ behavior: "smooth" });
+        Pager.scrollToId(dot.dataset.target);
       });
     });
 
@@ -138,47 +293,65 @@
 
   function initSound() {
     var btn = document.getElementById("soundToggle");
-    if (!btn) return;
+    var music = document.getElementById("winxMusic");
+    if (!btn || !music) return;
     var onIcon = btn.querySelector(".winx-sound-toggle__on");
     var offIcon = btn.querySelector(".winx-sound-toggle__off");
-    var soundOn = true;
 
-    function playFairyChime() {
-      try {
-        var Ctx = window.AudioContext || window.webkitAudioContext;
-        var ctx = new Ctx();
-        var now = ctx.currentTime;
-        var freqs = [1046.5, 1318.5, 1568.0, 2093.0];
-        freqs.forEach(function (freq, i) {
-          var osc = ctx.createOscillator();
-          var gain = ctx.createGain();
-          osc.type = "sine";
-          osc.frequency.value = freq;
-          var start = now + i * 0.09;
-          gain.gain.setValueAtTime(0, start);
-          gain.gain.linearRampToValueAtTime(0.15, start + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
-          osc.connect(gain).connect(ctx.destination);
-          osc.start(start);
-          osc.stop(start + 0.4);
-        });
-        setTimeout(function () { ctx.close(); }, 900);
-      } catch (e) {
-        /* WebAudio unsupported or blocked — silently ignore */
+    var storageKey = "winx_sound_on";
+    var soundOn = true;
+    try {
+      var stored = window.localStorage.getItem(storageKey);
+      if (stored !== null) soundOn = stored === "1";
+    } catch (e) {
+      /* localStorage unavailable (private mode etc.) — fall back to default */
+    }
+
+    music.loop = true;
+    music.volume = 0.35;
+
+    function setIcons() {
+      onIcon.hidden = !soundOn;
+      offIcon.hidden = soundOn;
+      btn.setAttribute("aria-label", soundOn ? "Выключить звук" : "Включить звук");
+    }
+
+    // Browsers always allow autoplay when muted, so playback starts in sync
+    // right away; unmuted autoplay is only allowed for some visitors, so we
+    // try it first and, if blocked, fall back to muted + unmute on this
+    // visitor's first interaction with the page (click/key/tap anywhere).
+    function armUnmuteOnInteraction() {
+      var events = ["pointerdown", "keydown", "touchstart"];
+      function onFirstInteraction() {
+        if (soundOn) music.muted = false;
+        music.play().catch(function () { /* still not allowed — ignore */ });
+        events.forEach(function (ev) { document.removeEventListener(ev, onFirstInteraction); });
       }
+      events.forEach(function (ev) { document.addEventListener(ev, onFirstInteraction, { passive: true }); });
+    }
+
+    setIcons();
+    music.muted = !soundOn;
+    var playPromise = music.play();
+    if (playPromise && playPromise.catch) {
+      playPromise.catch(function () {
+        music.muted = true;
+        music.play().catch(function () { /* nothing more we can do without a gesture */ });
+        armUnmuteOnInteraction();
+      });
     }
 
     btn.addEventListener("click", function () {
       soundOn = !soundOn;
-      onIcon.hidden = !soundOn;
-      offIcon.hidden = soundOn;
-      btn.setAttribute("aria-label", soundOn ? "Выключить звук" : "Включить звук");
-      if (soundOn) playFairyChime();
+      music.muted = !soundOn;
+      if (soundOn && music.paused) music.play().catch(function () {});
+      setIcons();
+      try {
+        window.localStorage.setItem(storageKey, soundOn ? "1" : "0");
+      } catch (e) {
+        /* ignore persistence failures */
+      }
     });
-
-    setTimeout(function () {
-      if (soundOn) playFairyChime();
-    }, 900);
   }
 
   function initHeroFlight() {
@@ -294,8 +467,7 @@
     var btn = document.getElementById("goToPuzzleBtn");
     if (!btn) return;
     btn.addEventListener("click", function () {
-      var target = document.getElementById("slide-5");
-      if (target) target.scrollIntoView({ behavior: "smooth" });
+      Pager.scrollToId("slide-5");
     });
   }
 
@@ -311,8 +483,7 @@
     var image = (window.WINX_PUZZLE_IMAGES || [])[idx];
 
     toOrderBtn.addEventListener("click", function () {
-      var target = document.getElementById("slide-6");
-      if (target) target.scrollIntoView({ behavior: "smooth" });
+      Pager.scrollToId("slide-6");
     });
 
     if (claimed) {
@@ -399,6 +570,13 @@
     render();
   }
 
+  function pluralBox(n) {
+    var mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return "бокс";
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "бокса";
+    return "боксов";
+  }
+
   function initOrderForm() {
     var form = document.getElementById("orderForm");
     if (!form) return;
@@ -406,6 +584,8 @@
     var methodRadios = form.querySelectorAll("input[name=method]");
     var addressField = document.getElementById("addressField");
     var addressInput = addressField.querySelector("input");
+    var quantityInput = document.getElementById("orderQuantity");
+    var totalEl = document.getElementById("orderTotal");
     var errorEl = document.getElementById("orderError");
     var submitBtn = form.querySelector("button[type=submit]");
 
@@ -416,8 +596,17 @@
       addressInput.required = isDelivery;
     }
 
+    function syncTotal() {
+      var qty = Math.max(1, parseInt(quantityInput.value, 10) || 1);
+      var price = window.WINX_BOX_PRICE || 0;
+      var total = Math.round(qty * price * 0.95);
+      totalEl.textContent = "Итого: " + total + " сом за " + qty + " " + pluralBox(qty) + " (скидка 5% уже учтена)";
+    }
+
     methodRadios.forEach(function (radio) { radio.addEventListener("change", syncAddress); });
+    if (quantityInput) quantityInput.addEventListener("input", syncTotal);
     syncAddress();
+    syncTotal();
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -432,20 +621,19 @@
       })
         .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
         .then(function (res) {
-          if (res.ok && res.data.ok) {
+          if (res.ok && res.data.ok && res.data.redirect_url) {
             document.getElementById("qrModal").hidden = false;
-            form.reset();
-            syncAddress();
+            window.location.href = res.data.redirect_url;
           } else {
             errorEl.textContent = (res.data && res.data.error) || "Что-то пошло не так, попробуй ещё раз";
             errorEl.hidden = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Купить";
           }
         })
         .catch(function () {
           errorEl.textContent = "Не удалось отправить заказ. Проверь соединение и попробуй снова";
           errorEl.hidden = false;
-        })
-        .finally(function () {
           submitBtn.disabled = false;
           submitBtn.textContent = "Купить";
         });
@@ -456,8 +644,7 @@
     var cards = document.querySelectorAll(".winx-games__card[data-target]");
     cards.forEach(function (card) {
       card.addEventListener("click", function () {
-        var target = document.getElementById(card.dataset.target);
-        if (target) target.scrollIntoView({ behavior: "smooth" });
+        Pager.scrollToId(card.dataset.target);
       });
     });
   }
@@ -634,10 +821,11 @@
       questionEl.textContent = current + 1 + ". " + q.q;
       progressBar.style.width = Math.round((current / QUIZ_QUESTIONS.length) * 100) + "%";
       optionsEl.innerHTML = "";
-      q.options.forEach(function (opt) {
+      q.options.forEach(function (opt, i) {
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "winx-quiz__option";
+        btn.style.setProperty("--i", i);
         btn.textContent = opt.text;
         btn.addEventListener("click", function () { selectOption(opt.c); });
         optionsEl.appendChild(btn);
@@ -707,6 +895,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    Pager.init();
     initParticles();
     initReveal();
     initDotNav();

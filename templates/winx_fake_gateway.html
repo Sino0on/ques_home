@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестовая оплата — QUES × WINX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/winx.css' %}">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(180deg, #dcebff 0%, #eee3ff 42%, #ffe3f1 100%);
+        }
+
+        .winx-gateway__card {
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            background: var(--bg-panel-strong);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 40px 34px;
+            box-shadow: 0 24px 60px -14px var(--shadow);
+        }
+
+        .winx-gateway__badge {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .winx-gateway__card h1 {
+            font-family: "Fraunces", serif;
+            font-weight: 500;
+            font-size: 24px;
+            margin: 0 0 10px;
+            color: var(--ink);
+        }
+
+        .winx-gateway__amount {
+            font-size: 15px;
+            color: var(--muted);
+            margin: 0 0 20px;
+        }
+
+        .winx-gateway__note {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--muted);
+            margin: 0 0 26px;
+        }
+
+        .winx-gateway__form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .winx-gateway__form button {
+            width: 100%;
+            border: none;
+        }
+
+        .winx-gateway__cancel {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--line) !important;
+            box-shadow: none;
+        }
+
+        .winx-gateway__cancel:hover {
+            background: rgba(83, 66, 150, 0.06);
+            color: var(--ink);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="winx-gateway__card">
+        <span class="winx-gateway__badge">Тестовый режим Finik</span>
+        <h1>Оплата Secret Box</h1>
+        <p class="winx-gateway__amount">{{ order.full_name }} · {{ order.quantity }} шт. · {{ order.amount }} сом</p>
+        <p class="winx-gateway__note">
+            Это временная заглушка вместо реальной страницы Finik — она исчезнет
+            сама, как только в .env будет выставлен FINIK_TEST_MODE=False
+            (боевые FINIK_API_KEY / FINIK_PRIVATE_KEY / FINIK_ACCOUNT_ID уже заданы).
+        </p>
+        <form method="post" class="winx-gateway__form">
+            {% csrf_token %}
+            <button type="submit" name="action" value="pay" class="winx-btn">Оплатить успешно</button>
+            <button type="submit" name="action" value="fail" class="winx-btn winx-gateway__cancel">Отменить оплату</button>
+        </form>
+    </div>
+</body>
+
+</html>

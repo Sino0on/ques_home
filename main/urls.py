@@ -11,4 +11,7 @@ urlpatterns = [
     path('sales-report/export/', sales_report_export, name='sales_report_export'),
     path('winx/claim/', winx_claim_discount, name='winx_claim_discount'),
     path('winx/order/', winx_submit_order, name='winx_submit_order'),
+    path('winx/finik/webhook/', winx_finik_webhook, name='winx_finik_webhook'),
+    path('winx/finik/return/<uuid:token>/', winx_finik_return, name='winx_finik_return'),
+    path('winx/gateway/<uuid:token>/', winx_fake_gateway, name='winx_fake_gateway'),
 ]

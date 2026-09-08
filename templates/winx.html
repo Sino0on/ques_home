@@ -16,6 +16,10 @@
 <body>
     <div class="winx-particles" id="winxParticles" aria-hidden="true"></div>
 
+    <audio id="winxMusic" src="{% static 'src/assets/winx/theme.mp3' %}" loop preload="auto"></audio>
+
+    <a class="winx-catalog-link" href="{% url 'home' %}">Каталог</a>
+
     <button class="winx-sound-toggle" id="soundToggle" type="button" aria-label="Выключить звук">
         <svg class="winx-sound-toggle__on" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor" />
@@ -122,10 +126,10 @@
                     Ты не выбираешь фею сама. После покупки магазин случайным образом
                     определяет, какой персонаж и какая свеча окажутся именно в твоём боксе.
                 </p>
-                <div class="winx-carousel reveal-el">
+                <div class="winx-carousel">
                     <button class="winx-carousel__nav prev" type="button" aria-label="Предыдущая">‹</button>
                     <div class="winx-carousel__track" id="carouselTrack">
-                        <div class="winx-box__card" style="--card-color:#ff5fa8;">
+                        <div class="winx-box__card reveal-el" style="--card-color:#ff5fa8; --i:0;">
                             <div class="winx-box__card-portrait">
                                 <img src="{% static 'src/assets/winx/characters/bloom.png' %}" alt="Блум">
                             </div>
@@ -133,7 +137,7 @@
                             <span>Пламя Дракона</span>
                             <p>Свеча в тёплых огненно-розовых тонах.</p>
                         </div>
-                        <div class="winx-box__card" style="--card-color:#ffd76a;">
+                        <div class="winx-box__card reveal-el" style="--card-color:#ffd76a; --i:1;">
                             <div class="winx-box__card-portrait">
                                 <img src="{% static 'src/assets/winx/characters/stella.png' %}" alt="Стелла">
                             </div>
@@ -141,7 +145,7 @@
                             <span>Сияющее Солнце</span>
                             <p>Свеча цвета золотого сияния.</p>
                         </div>
-                        <div class="winx-box__card" style="--card-color:#4be3a0;">
+                        <div class="winx-box__card reveal-el" style="--card-color:#4be3a0; --i:2;">
                             <div class="winx-box__card-portrait">
                                 <img src="{% static 'src/assets/winx/characters/flora.png' %}" alt="Флора">
                             </div>
@@ -149,7 +153,7 @@
                             <span>Природная Магия</span>
                             <p>Свеча в нежных зелёных оттенках.</p>
                         </div>
-                        <div class="winx-box__card" style="--card-color:#a06bff;">
+                        <div class="winx-box__card reveal-el" style="--card-color:#a06bff; --i:3;">
                             <div class="winx-box__card-portrait">
                                 <img src="{% static 'src/assets/winx/characters/musa.png' %}" alt="Муза">
                             </div>
@@ -157,7 +161,7 @@
                             <span>Ритм Вселенной</span>
                             <p>Свеча в глубоких фиолетовых тонах.</p>
                         </div>
-                        <div class="winx-box__card" style="--card-color:#4fd3e8;">
+                        <div class="winx-box__card reveal-el" style="--card-color:#4fd3e8; --i:4;">
                             <div class="winx-box__card-portrait winx-box__card-portrait--icon">
                                 <span>◆</span>
                             </div>
@@ -165,7 +169,7 @@
                             <span>Цифровая Искра</span>
                             <p>Свеча в холодных бирюзовых тонах.</p>
                         </div>
-                        <div class="winx-box__card" style="--card-color:#5b6ee8;">
+                        <div class="winx-box__card reveal-el" style="--card-color:#5b6ee8; --i:5;">
                             <div class="winx-box__card-portrait">
                                 <img src="{% static 'src/assets/winx/characters/aisha.png' %}" alt="Лейла">
                             </div>
@@ -183,6 +187,7 @@
                     </div>
                     <button class="winx-btn" id="boxSpinBtn" type="button">Испытать удачу</button>
                     <p id="boxSpinResult" class="winx-box__spin-result"></p>
+                    <a href="{% url 'home' %}" class="winx-box__catalog-link">Смотреть весь каталог →</a>
                 </div>
             </div>
         </section>
@@ -257,6 +262,9 @@
                         <label>Номер телефона
                             <input type="tel" name="phone" required placeholder="+996 XXX XXX XXX">
                         </label>
+                        <label>Количество боксов
+                            <input type="number" name="quantity" id="orderQuantity" min="1" max="10" value="1" required>
+                        </label>
                         <div class="winx-order__method">
                             <label><input type="radio" name="method" value="delivery" checked> Доставка</label>
                             <label><input type="radio" name="method" value="pickup"> Самовывоз</label>
@@ -264,6 +272,7 @@
                         <label id="addressField">Точный адрес доставки
                             <input type="text" name="address" placeholder="Улица, дом, квартира">
                         </label>
+                        <p class="winx-order__total" id="orderTotal"></p>
                         <button type="submit" class="winx-btn">Купить</button>
                         <p class="winx-order__error" id="orderError" hidden></p>
                     </form>
@@ -276,13 +285,13 @@
                 <p class="winx-eyebrow reveal-el">06 — Ещё магии</p>
                 <h2 class="reveal-el">Сыграть в другие игры с Winx</h2>
                 <p class="winx-games__disclaimer reveal-el">В этих играх скидка не действует — только веселье.</p>
-                <div class="winx-games__row reveal-el">
-                    <button type="button" class="winx-games__card" data-target="slide-5">
+                <div class="winx-games__row">
+                    <button type="button" class="winx-games__card reveal-el" style="--i:0;" data-target="slide-5">
                         <span class="winx-games__index">01</span>
                         <span class="winx-games__name">Пазл</span>
                         <span class="winx-games__badge">5% скидка</span>
                     </button>
-                    <button type="button" class="winx-games__card" data-target="slide-8">
+                    <button type="button" class="winx-games__card reveal-el" style="--i:1;" data-target="slide-8">
                         <span class="winx-games__index">02</span>
                         <span class="winx-games__name">Кто ты из Winx?</span>
                     </button>
@@ -353,7 +362,10 @@
                     <li>+996 504 003 033</li>
                     <li>@ques.kg</li>
                 </ul>
-                <a href="https://instagram.com/ques.kg" target="_blank" rel="noopener" class="winx-btn">Перейти в Instagram</a>
+                <div class="winx-final__actions">
+                    <a href="{% url 'home' %}" class="winx-btn">Смотреть каталог</a>
+                    <a href="https://instagram.com/ques.kg" target="_blank" rel="noopener" class="winx-btn winx-btn--ghost">Перейти в Instagram</a>
+                </div>
             </div>
         </section>
     </main>
@@ -361,9 +373,8 @@
     <div class="winx-modal" id="qrModal" hidden>
         <div class="winx-modal__box">
             <button class="winx-modal__close" id="qrClose" type="button" aria-label="Закрыть">×</button>
-            <h3>Оплата заказа</h3>
-            <div class="winx-modal__qr-placeholder">QR скоро здесь</div>
-            <p>Твой заказ уже получен командой QUES — менеджер свяжется с тобой для подтверждения оплаты.</p>
+            <h3>Переходим к оплате</h3>
+            <p>Сейчас откроется страница оплаты Finik. Не закрывай вкладку — после оплаты ты вернёшься на сайт.</p>
         </div>
     </div>
 
@@ -379,6 +390,7 @@
             claim: "{% url 'winx_claim_discount' %}",
             order: "{% url 'winx_submit_order' %}"
         };
+        window.WINX_BOX_PRICE = {{ box_price }};
         window.WINX_QUIZ_IMAGES = {
             bloom: "{% static 'src/assets/winx/characters/bloom.png' %}",
             stella: "{% static 'src/assets/winx/characters/stella.png' %}",

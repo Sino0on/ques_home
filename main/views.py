@@ -2,11 +2,14 @@ from idlelib.rpc import request_queue
 from random import shuffle
 import random
 from datetime import datetime, timezone, timedelta
+from decimal import Decimal, ROUND_HALF_UP
 import time
 
+from django.conf import settings
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import requests
 import json
@@ -15,6 +18,7 @@ from decouple import config
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
+from . import finik
 from .models import WinxOrder
 
 SALES_REPORT_URL = "https://app.pos-service.kg/proxy/?path=%2Freport%2F64abd976dac244c8d30a926c%2Fsales%2Fgroups-products%2F0%2F1000%2F&api=v3&timezone=21600"
@@ -316,6 +320,59 @@ def sales_report_export(request):
     return response
 
 
+WINX_MAX_QUANTITY = 10
+
+
+def _send_telegram(text):
+    if not (TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID):
+        print("Telegram is not configured, message:", text)
+        return
+    try:
+        requests.post(
+            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+            json={"chat_id": TELEGRAM_CHAT_ID, "text": text},
+            timeout=10,
+        )
+    except requests.RequestException as e:
+        print("Telegram send failed:", e)
+
+
+def _notify_order_paid(order):
+    method_label = "Доставка" if order.method == WinxOrder.DELIVERY else "Самовывоз"
+    lines = [
+        "💳 Куплен QUES x WINX Secret Box!",
+        f"ФИО: {order.full_name}",
+        f"Телефон: {order.phone}",
+        f"Количество: {order.quantity}",
+        f"Сумма: {order.amount} сом",
+        f"Получение: {method_label}",
+    ]
+    if order.method == WinxOrder.DELIVERY:
+        lines.append(f"Адрес: {order.address}")
+    lines.append(f"Скидка 5% (пазл): {'да' if order.discount_claimed else 'нет'}")
+    _send_telegram("\n".join(lines))
+
+
+def _mark_order_paid(order, payment_id=""):
+    """Single entry point for confirming a Finik payment — called by
+    the real webhook and the local test-mode fake gateway alike.
+    Idempotent, so a retried webhook delivery is safe."""
+    if order.status == WinxOrder.STATUS_PAID:
+        return
+    order.status = WinxOrder.STATUS_PAID
+    order.payment_id = payment_id
+    order.paid_at = datetime.now(timezone.utc)
+    order.save()
+    _notify_order_paid(order)
+
+
+def _mark_order_failed(order):
+    if order.status == WinxOrder.STATUS_PAID:
+        return
+    order.status = WinxOrder.STATUS_FAILED
+    order.save(update_fields=["status"])
+
+
 def winx_landing(request):
     if "winx_puzzle_index" not in request.session:
         request.session["winx_puzzle_index"] = random.randint(0, WINX_PUZZLE_COUNT - 1)
@@ -323,6 +380,7 @@ def winx_landing(request):
     context = {
         "puzzle_index": request.session["winx_puzzle_index"],
         "discount_claimed": request.session.get("winx_discount_claimed", False),
+        "box_price": settings.WINX_BOX_PRICE_KGS,
     }
     return render(request, "winx.html", context)
 
@@ -349,41 +407,88 @@ def winx_submit_order(request):
     method = request.POST.get("method", "").strip()
     address = request.POST.get("address", "").strip()
 
+    try:
+        quantity = int(request.POST.get("quantity", "1"))
+    except ValueError:
+        quantity = 0
+    if quantity < 1 or quantity > WINX_MAX_QUANTITY:
+        return JsonResponse({"ok": False, "error": "Некорректное количество боксов"}, status=400)
+
     if not full_name or not phone or method not in ("delivery", "pickup"):
         return JsonResponse({"ok": False, "error": "Заполните все обязательные поля"}, status=400)
     if method == "delivery" and not address:
         return JsonResponse({"ok": False, "error": "Укажите точный адрес доставки"}, status=400)
 
-    method_label = "Доставка" if method == "delivery" else "Самовывоз"
+    amount = Decimal(settings.WINX_BOX_PRICE_KGS) * quantity
+    if discount_claimed:
+        amount = (amount * Decimal("0.95")).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
 
-    WinxOrder.objects.create(
+    order = WinxOrder.objects.create(
         full_name=full_name,
         phone=phone,
         method=method,
         address=address if method == "delivery" else "",
         discount_claimed=discount_claimed,
+        quantity=quantity,
+        amount=amount,
     )
 
-    lines = [
-        "✨ Новый заказ QUES x WINX — Secret Box",
-        f"ФИО: {full_name}",
-        f"Телефон: {phone}",
-        f"Получение: {method_label}",
-    ]
-    if method == "delivery":
-        lines.append(f"Адрес: {address}")
-    lines.append(f"Скидка 5% (пазл): {'да' if discount_claimed else 'нет'}")
+    try:
+        redirect_url = finik.create_payment(order)
+    except finik.FinikError as exc:
+        return JsonResponse({"ok": False, "error": f"Не удалось создать платёж: {exc}"}, status=502)
 
-    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-        try:
-            requests.post(
-                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                json={"chat_id": TELEGRAM_CHAT_ID, "text": "\n".join(lines)},
-                timeout=10,
-            )
-        except requests.RequestException as e:
-            print("Telegram send failed:", e)
-    else:
-        print("Telegram is not configured, order:", "\n".join(lines))
+    return JsonResponse({"ok": True, "redirect_url": redirect_url})
 
-    return JsonResponse({"ok": True})
+
+def winx_finik_return(request, token):
+    """Where Finik redirects the buyer's browser after they pay. Just a
+    landing page — the webhook below (not this) is the source of truth
+    for whether the order is actually paid, so this may render slightly
+    before that webhook has landed."""
+    order = get_object_or_404(WinxOrder, qr_token=token)
+    return render(request, "winx_payment_return.html", {"order": order})
+
+
+@csrf_exempt
+@require_POST
+def winx_finik_webhook(request):
+    """Server-to-server notification Finik sends once a payment
+    succeeds (per their docs, only ever sent on success — there's no
+    webhook call for a failed/abandoned payment)."""
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return HttpResponse(status=400)
+
+    if not finik.verify_webhook(request, payload):
+        return HttpResponse(status=401)
+
+    status = str(payload.get("status", "")).lower()
+    if status not in ("success", "succeeded"):
+        return HttpResponse(status=200)
+
+    payment_id = (payload.get("fields") or {}).get("paymentId")
+    order = WinxOrder.objects.filter(qr_token=payment_id).first()
+    if not order:
+        return HttpResponse(status=200)
+
+    _mark_order_paid(order, payment_id=payload.get("transactionId", ""))
+    return HttpResponse(status=200)
+
+
+def winx_fake_gateway(request, token):
+    """Stand-in for Finik's hosted payment page. Only reachable while
+    FINIK_TEST_MODE is on or real credentials aren't configured yet —
+    lets the full purchase flow be tested end to end without a live
+    Finik account."""
+    order = get_object_or_404(WinxOrder, qr_token=token)
+
+    if request.method == "POST":
+        if request.POST.get("action") == "pay":
+            _mark_order_paid(order, payment_id="TEST-" + str(order.qr_token)[:8])
+        else:
+            _mark_order_failed(order)
+        return redirect("winx_finik_return", token=order.qr_token)
+
+    return render(request, "winx_fake_gateway.html", {"order": order})

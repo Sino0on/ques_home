@@ -26,6 +26,10 @@ html {
   overflow-x: hidden;
 }
 
+html.winx-pager-active {
+  scroll-snap-type: none;
+}
+
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
@@ -115,16 +119,51 @@ body {
   transform: none;
 }
 
+.winx-btn--ghost {
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.winx-btn--ghost:hover {
+  background: var(--accent);
+  color: var(--ink);
+  box-shadow: 0 10px 26px -10px rgba(255, 95, 168, 0.55);
+}
+
 /* Reveal on scroll */
 .reveal-el {
   opacity: 0;
   transform: translateY(22px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition-delay: calc(var(--i, 0) * 70ms);
 }
 
 .reveal-el.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Slide arrival flourish — plays on every navigated-to slide, not just first view */
+@keyframes winx-slide-settle {
+  from {
+    opacity: 0.5;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.winx-slide--enter > .container {
+  animation: winx-slide-settle 0.7s cubic-bezier(0.22, 0.9, 0.32, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-slide--enter > .container {
+    animation: none;
+  }
 }
 
 /* Particles — daylight magic dust, sparkles and fireflies */
@@ -318,6 +357,42 @@ body {
 
   .winx-butterfly--lg {
     width: 38px;
+  }
+}
+
+/* Persistent catalog link */
+.winx-catalog-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 8px 20px -10px var(--shadow);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.winx-catalog-link:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+  .winx-catalog-link {
+    padding: 0 14px;
+    font-size: 11px;
   }
 }
 
@@ -776,9 +851,13 @@ body {
 }
 
 .winx-box__card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-6px) rotate(-1deg);
   border-color: var(--card-color, var(--accent));
   box-shadow: 0 16px 32px -12px var(--card-color, var(--accent));
+}
+
+.winx-box__card:nth-child(even):hover {
+  transform: translateY(-6px) rotate(1deg);
 }
 
 .winx-box__card-portrait {
@@ -807,6 +886,23 @@ body {
   max-width: 100%;
   object-fit: contain;
   filter: drop-shadow(0 10px 16px rgba(90, 70, 160, 0.25));
+  animation: winx-float 4.5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.6s);
+}
+
+@keyframes winx-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-box__card-portrait img {
+    animation: none;
+  }
 }
 
 .winx-box__card-portrait--icon span {
@@ -936,6 +1032,23 @@ body {
   font-size: 14px;
   color: var(--ink);
   min-height: 20px;
+}
+
+.winx-box__catalog-link {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.winx-box__catalog-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* Slide 4 — materials */
@@ -1128,7 +1241,8 @@ body {
 }
 
 .winx-order__form input[type="text"],
-.winx-order__form input[type="tel"] {
+.winx-order__form input[type="tel"],
+.winx-order__form input[type="number"] {
   padding: 12px 14px;
   border-radius: 8px;
   border: 1px solid var(--line);
@@ -1136,6 +1250,15 @@ body {
   color: var(--ink);
   font-size: 15px;
   font-family: inherit;
+}
+
+.winx-order__total {
+  margin: -4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
 }
 
 .winx-order__method {
@@ -1192,7 +1315,11 @@ body {
 .winx-games__card:hover {
   border-color: var(--accent);
   background: var(--bg-panel-strong);
-  transform: translateY(-4px);
+  transform: translateY(-4px) rotate(-0.6deg);
+}
+
+.winx-games__card:nth-child(even):hover {
+  transform: translateY(-4px) rotate(0.6deg);
 }
 
 .winx-games__index {
@@ -1271,12 +1398,31 @@ body {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  animation: winx-option-in 0.45s ease both;
+  animation-delay: calc(var(--i, 0) * 70ms);
 }
 
 .winx-quiz__option:hover {
   border-color: var(--accent);
   background: var(--bg-panel-strong);
   transform: translateX(2px);
+}
+
+@keyframes winx-option-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-quiz__option {
+    animation: none;
+  }
 }
 
 .winx-quiz__result {
@@ -1299,6 +1445,13 @@ body {
   max-height: 220px;
   max-width: 100%;
   filter: drop-shadow(0 14px 30px rgba(90, 70, 160, 0.3));
+  animation: winx-float 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winx-quiz__result-img {
+    animation: none;
+  }
 }
 
 .winx-quiz__result-badge {
@@ -1334,6 +1487,14 @@ body {
   flex-direction: column;
   gap: 6px;
   color: var(--ink);
+}
+
+.winx-final__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
 }
 
 /* QR modal */

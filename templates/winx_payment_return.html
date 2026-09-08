@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата заказа — QUES × WINX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/winx.css' %}">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(180deg, #dcebff 0%, #eee3ff 42%, #ffe3f1 100%);
+        }
+
+        .winx-return__card {
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            background: var(--bg-panel-strong);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 40px 34px;
+            box-shadow: 0 24px 60px -14px var(--shadow);
+        }
+
+        .winx-return__badge {
+            display: inline-block;
+            margin-bottom: 18px;
+            font-size: 32px;
+        }
+
+        .winx-return__card h1 {
+            font-family: "Fraunces", serif;
+            font-weight: 500;
+            font-size: 26px;
+            margin: 0 0 14px;
+            color: var(--ink);
+        }
+
+        .winx-return__card p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--muted);
+            margin: 0 0 8px;
+        }
+
+        .winx-return__meta {
+            margin: 22px 0 28px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            background: rgba(83, 66, 150, 0.05);
+            border: 1px solid var(--line);
+            text-align: left;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        .winx-return__meta div + div {
+            margin-top: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="winx-return__card">
+        {% if order.is_paid %}
+            <span class="winx-return__badge">✨</span>
+            <h1>Оплата прошла успешно!</h1>
+            <p>Спасибо за заказ — команда QUES x WINX уже готовит твой Secret Box.</p>
+        {% elif order.status == "failed" %}
+            <span class="winx-return__badge">💔</span>
+            <h1>Оплата не прошла</h1>
+            <p>Попробуй оформить заказ ещё раз или напиши нам, если деньги списались.</p>
+        {% else %}
+            <span class="winx-return__badge">⏳</span>
+            <h1>Платёж обрабатывается</h1>
+            <p>Если оплата уже прошла, эта страница обновится в течение минуты. Обнови её, чтобы проверить статус.</p>
+        {% endif %}
+
+        <div class="winx-return__meta">
+            <div>ФИО: {{ order.full_name }}</div>
+            <div>Количество: {{ order.quantity }}</div>
+            <div>Сумма: {{ order.amount }} сом</div>
+            <div>Получение: {{ order.get_method_display }}</div>
+        </div>
+
+        <a href="{% url 'winx_landing' %}" class="winx-btn">На сайт QUES x WINX</a>
+    </div>
+</body>
+
+</html>

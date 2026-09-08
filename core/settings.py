@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -125,3 +127,29 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Public URL this site is reachable at — used to build the RedirectUrl /
+# webhookUrl Finik calls back to, so it must be a real publicly-reachable
+# HTTPS origin in production (Finik's servers need to reach the webhook).
+SITE_URL = config("SITE_URL", default="http://127.0.0.1:8000").rstrip("/")
+
+# Price of one Winx x Ques Secret Box, сом. The 5% puzzle discount (see
+# winx_submit_order) is applied on top of quantity * this price.
+WINX_BOX_PRICE_KGS = config("WINX_BOX_PRICE_KGS", default=990, cast=int)
+
+# --- Finik ---
+# https://www.finik.kg/documentation/web-sdk/ — payment gateway for the
+# Winx Secret Box checkout. While FINIK_TEST_MODE=True (or credentials
+# aren't set), buyers are sent to a local fake payment page instead, so
+# the whole order -> pay -> Telegram-notify flow is testable without a
+# live Finik account.
+FINIK_TEST_MODE = config("FINIK_TEST_MODE", default=True, cast=bool)
+# "beta" for testing against Finik's sandbox (no real money moves),
+# "prod" once ready to accept real payments.
+FINIK_MODE = config("FINIK_MODE", default="beta")
+FINIK_API_KEY = config("FINIK_API_KEY", default="")
+# Stored in .env with real newlines replaced by literal "\n" — swapped
+# back to real newlines here. See main/finik.py for the signing algorithm.
+FINIK_PRIVATE_KEY = config("FINIK_PRIVATE_KEY", default="").replace("\\n", "\n")
+FINIK_ACCOUNT_ID = config("FINIK_ACCOUNT_ID", default="")
+FINIK_QR_NAME = config("FINIK_QR_NAME", default="QUES x WINX Secret Box")
